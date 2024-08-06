@@ -85,7 +85,11 @@ function analyzeForThreats() {
 
     if (Math.random() < 0.2) { // 20% chance of detecting a threat
         const detectedThreat = threats[Math.floor(Math.random() * threats.length)];
-        showThreatInfo(detectedThreat);
+        if (document.hidden) {
+            showPopupNotification(detectedThreat);
+        } else {
+            showThreatInfo(detectedThreat);
+        }
         showRecommendations(detectedThreat.recommendations);
     }
 }
@@ -112,3 +116,29 @@ function showRecommendations(recommendationItems) {
 function hideRecommendations() {
     recommendations.classList.add('hidden');
 }
+
+function showPopupNotification(threat) {
+    if ('Notification' in window) {
+        Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+                new Notification('Cybersecurity Alert', {
+                    body: `${threat.name}: ${threat.description}`,
+                    icon: 'https://example.com/alert-icon.png' // Replace with an actual icon URL
+                });
+            }
+        });
+    }
+}
+
+// Listen for visibility changes
+document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && isProtectionActive) {
+        // User has returned to the tab
+        const threat = JSON.parse(localStorage.getItem('pendingThreat'));
+        if (threat) {
+            showThreatInfo(threat);
+            showRecommendations(threat.recommendations);
+            localStorage.removeItem('pendingThreat');
+        }
+    }
+});
