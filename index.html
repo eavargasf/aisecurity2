@@ -3,26 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cybersecurity Protection Tool</title>
+    <title>Cybersecurity Awareness Tool</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <div class="content">
-            <h1>Cybersecurity Protection Tool</h1>
-            <p>Enter the code and click the button to start protecting your browsing session.</p>
-            <input type="text" id="codeInput" placeholder="Enter code">
-            <button id="toggleButton">Start Protection</button>
-            <div id="status"></div>
-            <div id="threatInfo" class="hidden">
-                <h2>Threat Detected</h2>
-                <p id="threatDescription"></p>
-            </div>
-            <div id="recommendations" class="hidden">
-                <h2>Protection Recommendations</h2>
-                <ul id="recommendationList"></ul>
-            </div>
-        </div>
+        <h1>Cybersecurity Awareness Tool</h1>
+        
+        <section id="password-checker">
+            <h2>Password Strength Checker</h2>
+            <input type="password" id="password-input" placeholder="Enter a password">
+            <p id="password-strength"></p>
+        </section>
+
+        <section id="email-checker">
+            <h2>Email Breach Checker</h2>
+            <input type="email" id="email-input" placeholder="Enter your email">
+            <button id="check-email">Check Email</button>
+            <p id="email-result"></p>
+        </section>
+
+        <section id="security-tips">
+            <h2>Security Tips</h2>
+            <ul id="tips-list"></ul>
+        </section>
     </div>
     <script src="script.js"></script>
 </body>
