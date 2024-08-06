@@ -1,37 +1,47 @@
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Arial', sans-serif;
     line-height: 1.6;
     margin: 0;
     padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    background-color: #f4f4f4;
+    min-height: 100vh;
+    background-image: url('https://source.unsplash.com/1600x900/?technology,security');
+    background-size: cover;
+    background-position: center;
 }
 
 .container {
-    background-color: #fff;
+    width: 100%;
+    max-width: 600px;
+    background-color: rgba(255, 255, 255, 0.9);
     padding: 2rem;
-    border-radius: 5px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.content {
     text-align: center;
 }
 
 h1 {
-    color: #333;
+    color: #2c3e50;
+    margin-bottom: 1rem;
 }
 
 input, button {
     display: block;
     width: 100%;
-    padding: 0.5rem;
+    padding: 0.75rem;
     margin: 1rem 0;
     font-size: 1rem;
+    border: 1px solid #bdc3c7;
+    border-radius: 5px;
 }
 
 button {
-    background-color: #007bff;
+    background-color: #3498db;
     color: #fff;
     border: none;
     cursor: pointer;
@@ -39,26 +49,38 @@ button {
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #2980b9;
 }
 
 button:disabled {
-    background-color: #cccccc;
+    background-color: #95a5a6;
     cursor: not-allowed;
 }
 
 #status {
     margin-top: 1rem;
     font-weight: bold;
+    color: #27ae60;
 }
 
 .hidden {
     display: none;
 }
 
-#recommendations {
-    text-align: left;
+#threatInfo, #recommendations {
     margin-top: 2rem;
+    text-align: left;
+    background-color: #ecf0f1;
+    padding: 1rem;
+    border-radius: 5px;
+}
+
+#threatInfo {
+    border-left: 4px solid #e74c3c;
+}
+
+#recommendations {
+    border-left: 4px solid #2ecc71;
 }
 
 #recommendationList {
