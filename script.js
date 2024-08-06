@@ -1,99 +1,114 @@
 const codeInput = document.getElementById('codeInput');
-const startButton = document.getElementById('startButton');
+const toggleButton = document.getElementById('toggleButton');
 const status = document.getElementById('status');
+const threatInfo = document.getElementById('threatInfo');
+const threatDescription = document.getElementById('threatDescription');
 const recommendations = document.getElementById('recommendations');
 const recommendationList = document.getElementById('recommendationList');
 
 const ACTIVATION_CODE = 'AI1532';
 let isProtectionActive = false;
+let analysisInterval;
 
 codeInput.addEventListener('input', () => {
-    startButton.disabled = codeInput.value !== ACTIVATION_CODE;
+    toggleButton.disabled = codeInput.value !== ACTIVATION_CODE;
 });
 
-startButton.addEventListener('click', () => {
-    if (codeInput.value === ACTIVATION_CODE) {
-        isProtectionActive = true;
-        status.textContent = 'Protection active. Monitoring for threats...';
-        startButton.textContent = 'Stop Protection';
-        codeInput.disabled = true;
-        startThreatDetection();
+toggleButton.addEventListener('click', () => {
+    if (!isProtectionActive && codeInput.value === ACTIVATION_CODE) {
+        startProtection();
     } else if (isProtectionActive) {
-        isProtectionActive = false;
-        status.textContent = 'Protection stopped.';
-        startButton.textContent = 'Start Protection';
-        codeInput.disabled = false;
-        stopThreatDetection();
+        stopProtection();
     }
 });
 
+function startProtection() {
+    isProtectionActive = true;
+    status.textContent = 'Protection active. Monitoring for threats...';
+    toggleButton.textContent = 'Stop Protection';
+    codeInput.disabled = true;
+    startThreatDetection();
+}
+
+function stopProtection() {
+    isProtectionActive = false;
+    status.textContent = 'Protection stopped.';
+    toggleButton.textContent = 'Start Protection';
+    codeInput.disabled = false;
+    stopThreatDetection();
+    hideThreatInfo();
+    hideRecommendations();
+}
+
 function startThreatDetection() {
-    // Simulating threat detection with random intervals
-    setInterval(() => {
-        if (isProtectionActive && Math.random() < 0.1) { // 10% chance of detecting a threat
-            detectThreat();
+    analysisInterval = setInterval(() => {
+        if (isProtectionActive) {
+            analyzeForThreats();
         }
-    }, 5000); // Check every 5 seconds
+    }, 5000); // Analyze every 5 seconds
 }
 
 function stopThreatDetection() {
-    clearInterval();
-    recommendations.classList.add('hidden');
+    clearInterval(analysisInterval);
 }
 
-function detectThreat() {
+function analyzeForThreats() {
     const threats = [
-        'Potential phishing attempt detected',
-        'Suspicious script execution blocked',
-        'Unsecured connection warning',
-        'Potential malware download prevented'
+        { 
+            name: 'Potential phishing attempt',
+            description: 'A suspicious link attempting to steal your credentials has been detected.',
+            recommendations: [
+                'Do not click on any suspicious links',
+                'Verify the authenticity of the website',
+                'Use two-factor authentication when possible'
+            ]
+        },
+        {
+            name: 'Suspicious script execution',
+            description: 'A potentially harmful script was blocked from running on the page.',
+            recommendations: [
+                'Keep your browser and extensions up to date',
+                'Use a reputable ad-blocker',
+                'Be cautious when allowing scripts to run on websites'
+            ]
+        },
+        {
+            name: 'Unsecured connection',
+            description: 'You are connected to a website without proper encryption (HTTP instead of HTTPS).',
+            recommendations: [
+                'Avoid entering sensitive information on this site',
+                'Look for the padlock icon in the address bar',
+                'Use a VPN for an extra layer of security'
+            ]
+        }
     ];
-    const detectedThreat = threats[Math.floor(Math.random() * threats.length)];
-    
-    // Show notification
-    if (!document.hidden) {
-        alert(`Threat detected: ${detectedThreat}`);
-    } else {
-        showNotification('Cybersecurity Alert', detectedThreat);
-    }
-    
-    // Update recommendations
-    updateRecommendations(detectedThreat);
-}
 
-function showNotification(title, body) {
-    if ('Notification' in window) {
-        Notification.requestPermission().then(permission => {
-            if (permission === 'granted') {
-                new Notification(title, { body });
-            }
-        });
+    if (Math.random() < 0.2) { // 20% chance of detecting a threat
+        const detectedThreat = threats[Math.floor(Math.random() * threats.length)];
+        showThreatInfo(detectedThreat);
+        showRecommendations(detectedThreat.recommendations);
     }
 }
 
-function updateRecommendations(threat) {
+function showThreatInfo(threat) {
+    threatDescription.textContent = `${threat.name}: ${threat.description}`;
+    threatInfo.classList.remove('hidden');
+}
+
+function hideThreatInfo() {
+    threatInfo.classList.add('hidden');
+}
+
+function showRecommendations(recommendationItems) {
     recommendationList.innerHTML = '';
-    const recommendationItems = [
-        'Update your browser to the latest version',
-        'Enable two-factor authentication on your accounts',
-        'Avoid clicking on suspicious links or downloading unknown files',
-        'Use a reputable antivirus software'
-    ];
-    
     recommendationItems.forEach(item => {
         const li = document.createElement('li');
         li.textContent = item;
         recommendationList.appendChild(li);
     });
-    
     recommendations.classList.remove('hidden');
 }
 
-// Simulating closing the tab where the threat was found
-window.addEventListener('blur', () => {
-    if (isProtectionActive && !document.hidden) {
-        setTimeout(() => {
-            alert('The tab with the potential threat has been closed for your safety.');
-        }, 1000);
-    }
-});
+function hideRecommendations() {
+    recommendations.classList.add('hidden');
+}
