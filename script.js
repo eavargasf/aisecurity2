@@ -1,144 +1,74 @@
-const codeInput = document.getElementById('codeInput');
-const toggleButton = document.getElementById('toggleButton');
-const status = document.getElementById('status');
-const threatInfo = document.getElementById('threatInfo');
-const threatDescription = document.getElementById('threatDescription');
-const recommendations = document.getElementById('recommendations');
-const recommendationList = document.getElementById('recommendationList');
+// Password Strength Checker
+const passwordInput = document.getElementById('password-input');
+const passwordStrength = document.getElementById('password-strength');
 
-const ACTIVATION_CODE = 'AI1532';
-let isProtectionActive = false;
-let analysisInterval;
+passwordInput.addEventListener('input', () => {
+    const password = passwordInput.value;
+    let strength = 0;
+    
+    if (password.length >= 8) strength++;
+    if (password.match(/[a-z]+/)) strength++;
+    if (password.match(/[A-Z]+/)) strength++;
+    if (password.match(/[0-9]+/)) strength++;
+    if (password.match(/[$@#&!]+/)) strength++;
 
-codeInput.addEventListener('input', () => {
-    toggleButton.disabled = codeInput.value !== ACTIVATION_CODE;
-});
-
-toggleButton.addEventListener('click', () => {
-    if (!isProtectionActive && codeInput.value === ACTIVATION_CODE) {
-        startProtection();
-    } else if (isProtectionActive) {
-        stopProtection();
+    switch(strength) {
+        case 0:
+        case 1:
+            passwordStrength.textContent = 'Weak';
+            passwordStrength.style.color = 'red';
+            break;
+        case 2:
+        case 3:
+            passwordStrength.textContent = 'Medium';
+            passwordStrength.style.color = 'orange';
+            break;
+        case 4:
+        case 5:
+            passwordStrength.textContent = 'Strong';
+            passwordStrength.style.color = 'green';
+            break;
     }
 });
 
-function startProtection() {
-    isProtectionActive = true;
-    status.textContent = 'Protection active. Monitoring for threats...';
-    toggleButton.textContent = 'Stop Protection';
-    codeInput.disabled = true;
-    startThreatDetection();
-}
+// Email Breach Checker
+const emailInput = document.getElementById('email-input');
+const checkEmailButton = document.getElementById('check-email');
+const emailResult = document.getElementById('email-result');
 
-function stopProtection() {
-    isProtectionActive = false;
-    status.textContent = 'Protection stopped.';
-    toggleButton.textContent = 'Start Protection';
-    codeInput.disabled = false;
-    stopThreatDetection();
-    hideThreatInfo();
-    hideRecommendations();
-}
-
-function startThreatDetection() {
-    analysisInterval = setInterval(() => {
-        if (isProtectionActive) {
-            analyzeForThreats();
-        }
-    }, 5000); // Analyze every 5 seconds
-}
-
-function stopThreatDetection() {
-    clearInterval(analysisInterval);
-}
-
-function analyzeForThreats() {
-    const threats = [
-        { 
-            name: 'Potential phishing attempt',
-            description: 'A suspicious link attempting to steal your credentials has been detected.',
-            recommendations: [
-                'Do not click on any suspicious links',
-                'Verify the authenticity of the website',
-                'Use two-factor authentication when possible'
-            ]
-        },
-        {
-            name: 'Suspicious script execution',
-            description: 'A potentially harmful script was blocked from running on the page.',
-            recommendations: [
-                'Keep your browser and extensions up to date',
-                'Use a reputable ad-blocker',
-                'Be cautious when allowing scripts to run on websites'
-            ]
-        },
-        {
-            name: 'Unsecured connection',
-            description: 'You are connected to a website without proper encryption (HTTP instead of HTTPS).',
-            recommendations: [
-                'Avoid entering sensitive information on this site',
-                'Look for the padlock icon in the address bar',
-                'Use a VPN for an extra layer of security'
-            ]
-        }
-    ];
-
-    if (Math.random() < 0.2) { // 20% chance of detecting a threat
-        const detectedThreat = threats[Math.floor(Math.random() * threats.length)];
-        if (document.hidden) {
-            showPopupNotification(detectedThreat);
+checkEmailButton.addEventListener('click', () => {
+    const email = emailInput.value;
+    // Note: This is a mock API call. In a real application, you would call the actual HaveIBeenPwned API.
+    // However, for privacy and security reasons, we're not making actual API calls in this example.
+    setTimeout(() => {
+        const breached = Math.random() < 0.5; // Simulate a 50% chance of the email being in a breach
+        if (breached) {
+            emailResult.textContent = 'This email appears in known data breaches. Consider changing your password.';
+            emailResult.style.color = 'red';
         } else {
-            showThreatInfo(detectedThreat);
+            emailResult.textContent = 'Good news! This email does not appear in known data breaches.';
+            emailResult.style.color = 'green';
         }
-        showRecommendations(detectedThreat.recommendations);
-    }
-}
+    }, 1000);
+});
 
-function showThreatInfo(threat) {
-    threatDescription.textContent = `${threat.name}: ${threat.description}`;
-    threatInfo.classList.remove('hidden');
-}
+// Security Tips
+const tipsList = document.getElementById('tips-list');
+const securityTips = [
+    'Use a unique password for each account.',
+    'Enable two-factor authentication whenever possible.',
+    'Keep your software and operating systems up to date.',
+    'Be cautious about clicking links in emails or messages.',
+    'Use a reputable antivirus program and keep it updated.',
+    'Be careful about what information you share on social media.',
+    'Use a VPN when connecting to public Wi-Fi.',
+    'Regularly back up your important data.',
+    'Be wary of phishing attempts asking for personal information.',
+    'Use a password manager to generate and store complex passwords.'
+];
 
-function hideThreatInfo() {
-    threatInfo.classList.add('hidden');
-}
-
-function showRecommendations(recommendationItems) {
-    recommendationList.innerHTML = '';
-    recommendationItems.forEach(item => {
-        const li = document.createElement('li');
-        li.textContent = item;
-        recommendationList.appendChild(li);
-    });
-    recommendations.classList.remove('hidden');
-}
-
-function hideRecommendations() {
-    recommendations.classList.add('hidden');
-}
-
-function showPopupNotification(threat) {
-    if ('Notification' in window) {
-        Notification.requestPermission().then(permission => {
-            if (permission === 'granted') {
-                new Notification('Cybersecurity Alert', {
-                    body: `${threat.name}: ${threat.description}`,
-                    icon: 'https://example.com/alert-icon.png' // Replace with an actual icon URL
-                });
-            }
-        });
-    }
-}
-
-// Listen for visibility changes
-document.addEventListener('visibilitychange', () => {
-    if (!document.hidden && isProtectionActive) {
-        // User has returned to the tab
-        const threat = JSON.parse(localStorage.getItem('pendingThreat'));
-        if (threat) {
-            showThreatInfo(threat);
-            showRecommendations(threat.recommendations);
-            localStorage.removeItem('pendingThreat');
-        }
-    }
+securityTips.forEach(tip => {
+    const li = document.createElement('li');
+    li.textContent = tip;
+    tipsList.appendChild(li);
 });
